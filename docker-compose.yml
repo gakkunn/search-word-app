@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/search-word-app/
+    tty: true
+    stdin_open: true
+    environment:
+     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - db
+
+  db:
+    platform: linux/x86_64
+    image: mysql:5.7
+    environment:
+      MYSQL_USER: user
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

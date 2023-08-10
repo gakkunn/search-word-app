@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ruby: circleci/ruby@1.1.2
+  ruby-orbs: sue445/ruby-orbs@1.6.0
 
 executors:
   default:
@@ -15,7 +15,7 @@ executors:
 commands:
   bundle-install:
     steps:
-      - ruby/bundle-install:
+      - ruby-orbs/bundle-install:
           bundle_clean: true
           bundle_extra_args: ''
           bundle_gemfile: Gemfile

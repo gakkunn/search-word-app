@@ -40,7 +40,7 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: pass
     steps:
-      - checkout:
+      - checkout
       - bundle-install
       - run:
           name: Database setup

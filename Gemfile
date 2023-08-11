@@ -9,8 +9,6 @@ gem 'rails', '~> 5.2.8', '>= 5.2.8.1'
 gem 'mysql2', '>= 0.4.4', '< 0.6.0'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
-# Use tzinfo-data
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby, :circleci]
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -62,3 +60,7 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+if ENV['CIRCLECI']
+  gem 'tzinfo-data'
+end

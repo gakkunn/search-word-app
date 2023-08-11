@@ -38,6 +38,19 @@ jobs:
       - run:
           name: Install timezone data
           command: sudo apt-get install -y tzdata
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+            - v1-dependencies-
+      - run:
+          name: install dependencies
+          command: |
+            gem install bundler -v 1.17.3
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
       - run:
           name: Database setup
           command: bundle exec rails db:create && bundle exec rails db:migrate

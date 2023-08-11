@@ -33,6 +33,11 @@ jobs:
     working_directory: ~/search-word-app
     steps:
       - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get update -qq
+            sudo apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim
       - ruby/install-deps
       - run:
           name: Database setup

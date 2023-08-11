@@ -2,7 +2,6 @@ version: 2.1
 orbs:
   ruby: circleci/ruby@1.8.0
   node: circleci/node@2.0.0
-
 jobs:
   build:
     docker:
@@ -16,7 +15,6 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim
       - ruby/install-deps
-
   test:
     parallelism: 3
     docker:
@@ -44,7 +42,6 @@ jobs:
       - run:
           name: test
           command: bundle exec rails test
-
 workflows:
   version: 2
   build_test_and_deploy:

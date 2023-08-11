@@ -10,8 +10,8 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Install dependencies
-        command: sudo apt-get install -y libmysqlclient-dev
+          name: Install dependencies
+          command: sudo apt-get install -y libmysqlclient-dev
       - ruby/install-deps
 
   test:
@@ -28,6 +28,9 @@ jobs:
     working_directory: ~/search-word-app
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: sudo apt-get install -y libmysqlclient-dev
       - ruby/install-deps
       - run:
           name: Database setup

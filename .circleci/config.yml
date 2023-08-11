@@ -2,46 +2,30 @@ version: 2.1
 orbs:
   ruby: circleci/ruby@1.1.2
 
-
-executors:
-  default:
-    working_directory: ~/search-word-app
-    docker:
-      - image: circleci/ruby:2.7
-        environment:
-          APP_DATABASE_HOST: "127.0.0.1"
-          BUNDLE_PATH: vendor/bundle
-          RAILS_ENV: test
-
-commands:
-  bundle-install:
-    steps:
-      - ruby/bundle-install:
-          bundle_clean: true
-          bundle_extra_args: ''
-          bundle_gemfile: Gemfile
-          bundle_jobs: 3
-          bundle_path: vendor/bundle
-          bundle_retry: 3
-          cache_key_prefix: v1-bundle-dependencies
-          restore_bundled_with: true
-
 jobs:
   build:
-    executor: default
+    docker:
+      - image: circleci/ruby:2.7
+    working_directory: ~/search-word-app
     steps:
       - checkout
-      - bundle-install
+      - ruby/install-deps
 
   test:
-    executor: default
     docker:
+      - image: circleci/ruby:2.7
       - image: circleci/mysql:5.5
         environment:
           MYSQL_ROOT_PASSWORD: pass
+    environment:
+      BUNDLE_JOBS: "3"
+      BUNDLE_RETRY: "3"
+      APP_DATABASE_HOST: "127.0.0.1"
+      RAILS_ENV: test
+    working_directory: ~/search-word-app
     steps:
       - checkout
-      - bundle-install
+      - ruby/install-deps
       - run:
           name: Database setup
           command: bundle exec rails db:create && db:migrate

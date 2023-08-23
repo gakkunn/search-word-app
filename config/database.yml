@@ -52,4 +52,4 @@ production:
   <<: *default
   database: search-word-app_production
   username: <%= ENV['DB_USERNAME'] %>
-  password: <%= ENV['DB_PASSWORD'] %>
+  password: "<%= ENV['DB_PASSWORD'] %>"

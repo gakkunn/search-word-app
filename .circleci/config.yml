@@ -106,6 +106,7 @@ workflows:
             branches:
               only: master
           repo: search-word
+          tag: "${CIRCLE_SHA1}"
           dockerfile: Dockerfile
       - aws-ecs/deploy-service-update:
           requires:
@@ -116,4 +117,4 @@ workflows:
           family: "serch-word-task-definition"
           cluster-name: "search-word-ecs-cluster"
           service-name: "search-word-alb-service"
-          container-image-name-updates: "container=rails"
+          container-image-name-updates: "container=rails,tag=${CIRCLE_SHA1}"

@@ -45,6 +45,9 @@ jobs:
           key: v2-search-word-app-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install MySQL development libraries
+          command: sudo apt-get install -y libmysqlclient-dev
       - install_bundler
       - run:
           name: Bundle Install Dependencies

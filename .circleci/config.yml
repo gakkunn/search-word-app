@@ -74,7 +74,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            gem install bundler -v 1.17.3
+            gem install bundler
             bundle install --path vendor/bundle
       - run:
           name: Database setup
@@ -86,22 +86,13 @@ jobs:
 workflows:
   build:
     jobs:
-      - fetch_source_code:
-          filters:
-            branches:
-              only: master
+      - fetch_source_code
       - bundle_dependencies:
           requires:
             - fetch_source_code
-          filters:
-            branches:
-              only: master
       - minitest:
           requires:
             - bundle_dependencies
-          filters:
-            branches:
-              only: master
       - aws-ecr/build-and-push-image:
           requires:
             - minitest

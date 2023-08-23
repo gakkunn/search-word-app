@@ -106,7 +106,7 @@ workflows:
             branches:
               only: master
           repo: search-word
-          dockerfile: ~/search-word-app/Dockerfile
+          dockerfile: Dockerfile
       - aws-ecs/deploy-service-update:
           requires:
             - aws-ecr/build-and-push-image

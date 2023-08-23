@@ -54,7 +54,7 @@ jobs:
           key: v2-dependencies-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
-  
+
   minitest:
     executor:
       name: default_container

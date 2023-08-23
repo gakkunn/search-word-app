@@ -1,35 +1,73 @@
 version: 2.1
+
 orbs:
-  ruby: circleci/ruby@1.8.0
-  node: circleci/node@2.0.0
-jobs:
-  build:
+  aws-ecr: circleci/aws-ecr@7.3.0
+  aws-ecs: circleci/aws-ecs@2.0.0
+
+executors:
+  default_container:
     docker:
       - image: cimg/ruby:2.5.7
-    working_directory: ~/search-word-app
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies
-          command: |
-            sudo apt-get update -qq
-            sudo apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim
-      - ruby/install-deps
-  test:
-    parallelism: 3
-    docker:
-      - image: cimg/ruby:2.5.7
+        environment:
+          RAILS_ENV: test
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+          APP_DATABASE_HOST: "127.0.0.1"
+          BUNDLER_VERSION: 1.17.3
       - image: cimg/mysql:8.0
         environment:
           MYSQL_ROOT_PASSWORD: pass
-    environment:
-      BUNDLE_JOBS: "3"
-      BUNDLE_RETRY: "3"
-      APP_DATABASE_HOST: "127.0.0.1"
-      RAILS_ENV: test
     working_directory: ~/search-word-app
+
+commands:
+  install_bundler:
+    description: Bundler install
+    steps:
+      - run: gem install bundler -v 1.17.3
+
+jobs:
+  fetch_source_code:
+    executor:
+      name: default_container
     steps:
       - checkout
+      - save_cache:
+          key: v2-search-word-app-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/search-word-app
+
+  bundle_dependencies:
+    executor:
+      name: default_container
+    steps:
+      - restore_cache:
+          key: v2-search-word-app-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Update APT repository and Install MySQL development libraries
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libmysqlclient-dev
+      - install_bundler
+      - run:
+          name: Bundle Install Dependencies
+          command: |
+            bundle install
+      - save_cache:
+          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+  minitest:
+    executor:
+      name: default_container
+    steps:
+      - restore_cache:
+          key: v2-search-word-app-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
       - run:
           name: Install Dependencies
           command: |
@@ -38,30 +76,45 @@ jobs:
       - run:
           name: Install timezone data
           command: sudo apt-get install -y tzdata
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
-            - v1-dependencies-
+      - install_bundler
       - run:
           name: install dependencies
           command: |
-            gem install bundler -v 1.17.3
-            bundle install --jobs=4 --retry=3 --path vendor/bundle
-      - save_cache:
-          paths:
-            - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+            gem install bundler -v 2.3.26
+            bundle install --path vendor/bundle
       - run:
           name: Database setup
           command: bundle exec rails db:create && bundle exec rails db:migrate
       - run:
           name: test
           command: bundle exec rails test
+
 workflows:
-  version: 2
-  build_test_and_deploy:
+  build:
     jobs:
-      - build
-      - test:
+      - fetch_source_code
+      - bundle_dependencies:
           requires:
-            - build
+            - fetch_source_code
+      - minitest:
+          requires:
+            - bundle_dependencies
+      - aws-ecr/build-and-push-image:
+          requires:
+            - minitest
+          filters:
+            branches:
+              only: master
+          repo: search-word
+          tag: "${CIRCLE_SHA1}"
+          dockerfile: Dockerfile
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build-and-push-image
+          filters:
+            branches:
+              only: master
+          family: "serch-word-task-definition"
+          cluster-name: "search-word-ecs-cluster"
+          service-name: "search-word-alb-service"
+          container-image-name-updates: "container=rails,tag=${CIRCLE_SHA1}"

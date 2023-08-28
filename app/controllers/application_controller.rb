@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
     def hello
-        render html: "ソースコード変更されているか確認"
+        render html: "ログイン完了"
       end
 end

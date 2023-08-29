@@ -10,6 +10,7 @@ class BlocksController < ApplicationController
   
     def new
         @block = current_user.blocks.build
+        Block::MAX_URLSETS_COUNT.times { @block.urlsets.build }
     end
   
     def create
@@ -18,6 +19,8 @@ class BlocksController < ApplicationController
         if @block.save
             redirect_to blocks_path, notice: 'Block and URL were successfully created.'
         else
+            required_urlsets = Block::MAX_URLSETS_COUNT - @block.urlsets.size
+            required_urlsets.times { @block.urlsets.build }
             render :new
         end
     end
@@ -47,6 +50,6 @@ class BlocksController < ApplicationController
     end
 
     def block_params
-      params.require(:block).permit(:name)
+        params.require(:block).permit(:name, urlsets_attributes: [:id, :name, :address, :_destroy])
     end
 end

@@ -1,4 +1,5 @@
 class BlocksController < ApplicationController
+    require 'open-uri'
     before_action :set_block, only: %i[ show edit update destroy ]
 
     def index
@@ -7,6 +8,10 @@ class BlocksController < ApplicationController
   
     def show
         @urlsets = @block.urlsets
+        @search_word = params[:search]
+        @each_word_counts = @search_word.present? ? search_in_addresses : {}
+        Rails.logger.debug("search_word: #{@search_word}")
+        Rails.logger.debug("each_word_counts: #{@each_word_counts}")
     end
   
     def new
@@ -48,11 +53,30 @@ class BlocksController < ApplicationController
     end
 
     private
-    def set_block
-        @block = current_user.blocks.find(params[:id])
-    end
+        def set_block
+            @block = current_user.blocks.find(params[:id])
+        end
 
-    def block_params
-        params.require(:block).permit(:name, urlsets_attributes: [:id, :name, :address, :_destroy])
-    end
+        def block_params
+            params.require(:block).permit(:name, urlsets_attributes: [:id, :name, :address, :_destroy])
+        end
+
+        def search_in_addresses
+            urlset_word_counts = {}
+            has_error = false
+        
+            @block.urlsets.each do |urlset|
+                begin
+                    doc = Nokogiri::HTML(open(urlset.address))
+                    count = doc.to_s.scan(@search_word).count
+                    urlset_word_counts[urlset.id] = count if count > 0
+                rescue OpenURI::HTTPError, SocketError, Timeout::Error, Errno::ENOENT => e
+                    has_error = true
+                    Rails.logger.error("Error fetching URL #{urlset.address}: #{e.message}")
+                end
+            end
+            
+            flash.now[:alert] = "存在しないURLが含まれている可能性があります" if has_error
+            return urlset_word_counts
+        end
 end

@@ -6,6 +6,7 @@ class BlocksController < ApplicationController
     end
   
     def show
+        @urlsets = @block.urlsets
     end
   
     def new
@@ -26,6 +27,8 @@ class BlocksController < ApplicationController
     end
   
     def edit
+        existing_urlsets_count = @block.urlsets.count
+        (Block::MAX_URLSETS_COUNT - existing_urlsets_count).times { @block.urlsets.build }
     end
   
     def update

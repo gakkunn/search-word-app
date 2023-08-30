@@ -3,6 +3,11 @@
 
 <h1><%= @block.name %></h1>
 <p>URL名がずらっと続く</p>
+<% if @urlsets.any? %>
+	<ol class="urlsets">
+	  <%= render @urlsets %>
+	</ol>
+<% end %>
 <h3>検索ボタン</h3>
 
 <%= link_to 'Edit', edit_block_path(@block) %>

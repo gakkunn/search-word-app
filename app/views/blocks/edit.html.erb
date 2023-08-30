@@ -14,13 +14,26 @@
       </div>
     <% end %>
   
+    <h3>Blockの名前を記述してください</h3>
     <div class="field">
-      <%= f.label :name %>
-      <%= f.text_field :name %>
+        <%= f.label :name %>
+        <%= f.text_field :name %>
     </div> 
-  
-    <div class="actions">
-      <%= f.submit "更新" %>
+
+    <h3>urlのnameとaddressを記述してください</h3>
+    <div class="field">
+        <%= f.fields_for :urlsets do |url_form| %>
+            <div class="url-set">
+                <%= url_form.label :name %>
+                <%= url_form.text_field :name %>
+                <%= url_form.label :address %>
+                <%= url_form.text_field :address %>
+            </div>
+        <% end %>
     </div>
-  <% end %>
-  <%= link_to 'Back', blocks_path %>
+
+    <div class="actions">
+        <%= f.submit "更新"%>
+    </div>
+<% end %>
+<%= link_to 'Back', blocks_path %>

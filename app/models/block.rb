@@ -5,7 +5,7 @@ class Block < ApplicationRecord
     validates :user_id, presence: true
 
     accepts_nested_attributes_for :urlsets,
-                                  reject_if: proc { |attributes| attributes['name'].blank? || attributes['address'].blank? }, 
+                                  reject_if: :all_blank, 
                                   allow_destroy: true
 
     # 最低1セットのURLを持っているかを確認するカスタムバリデーション

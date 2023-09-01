@@ -1,5 +1,7 @@
 class BlocksController < ApplicationController
     require 'open-uri'
+    require 'nokogiri'
+    
     before_action :set_block, only: %i[ show edit update destroy ]
 
     def index
@@ -10,8 +12,6 @@ class BlocksController < ApplicationController
         @urlsets = @block.urlsets
         @search_word = params[:search]
         @each_word_counts = @search_word.present? ? search_in_addresses : {}
-        Rails.logger.debug("search_word: #{@search_word}")
-        Rails.logger.debug("each_word_counts: #{@each_word_counts}")
     end
   
     def new

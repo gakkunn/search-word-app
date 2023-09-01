@@ -1,23 +1,9 @@
 <p>Blockの詳細ページかつ、検索ページです</p>
 
-<h2>search_word:<%= @search_word %></h2>
-<h2>each_word_counts:<%= @each_word_counts %></h2>
-
-<% if flash[:alert] %>
-  <div class="alert alert-danger">
-    <%= flash[:alert] %>
-  </div>
-<% end %>
-
 <h1><%= @block.name %></h1>
 
 <ul>
   <% @block.urlsets.each do |urlset| %>
-    
-    <h3>urlset.id:<%= urlset.id %></h2>
-    <h3>search_word:<%= @search_word %></h2>
-    <h3>each_word_counts:<%= @each_word_counts %></h2>
-
     <li>
         <%= urlset.name %>:<%= urlset.address %>
         <% if @search_word && @each_word_counts[urlset.id] %>

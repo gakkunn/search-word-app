@@ -37,9 +37,17 @@ class BlocksController < ApplicationController
     end
   
     def update
+        params[:block][:urlsets_attributes].each do |index, urlset_attrs|
+            if urlset_attrs[:id] && urlset_attrs[:name].blank? && urlset_attrs[:address].blank?
+                urlset_attrs[:_destroy] = '1'
+            end
+        end
+
         if @block.update(block_params)
             redirect_to blocks_path, notice: 'Block and URL were successfully updated.'
         else
+            required_urlsets = Block::MAX_URLSETS_COUNT - @block.urlsets.size
+            required_urlsets.times { @block.urlsets.build }
             render :edit
         end
     end

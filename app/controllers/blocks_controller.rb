@@ -68,10 +68,13 @@ class BlocksController < ApplicationController
             @block.urlsets.each do |urlset|
                 begin
                     doc = Nokogiri::HTML(open(urlset.address))
-                    count = doc.to_s.scan(@search_word).count
-                    urlset_word_counts[urlset.id] = count if count > 0
+                    doc.search('script, style').remove
+                    visible_text = doc.text  
+                    count = visible_text.downcase.scan(@search_word.downcase).count
+                    urlset_word_counts[urlset.id] = count if count >= 0
                 rescue OpenURI::HTTPError, SocketError, Timeout::Error, Errno::ENOENT => e
                     has_error = true
+                    urlset_word_counts[urlset.id] = -1
                     Rails.logger.error("Error fetching URL #{urlset.address}: #{e.message}")
                 end
             end

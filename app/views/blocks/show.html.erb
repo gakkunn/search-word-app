@@ -6,10 +6,15 @@
   <% @block.urlsets.each do |urlset| %>
     <li>
         <%= urlset.name %>:<%= urlset.address %>
-        <% if @search_word && @each_word_counts[urlset.id] %>
-            <strong>(<%= @each_word_counts[urlset.id] %> matches)</strong>
+        <% if @search_word %>
+            <% if @each_word_counts[urlset.id] == -1 %>
+                <strong>(error)</strong>
+            <% elsif @each_word_counts[urlset.id] %>
+                <strong>(<%= @each_word_counts[urlset.id] %> matches)</strong>
+            <% end %>
         <% end %>
     </li>
+
   <% end %>
 </ul>
 

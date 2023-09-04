@@ -71,23 +71,66 @@ class BlocksController < ApplicationController
 
         def search_in_addresses
             urlset_word_counts = {}
-            has_error = false
+            error_messages = []
         
             @block.urlsets.each do |urlset|
                 begin
-                    doc = Nokogiri::HTML(open(urlset.address))
-                    doc.search('script, style').remove
-                    visible_text = doc.text  
-                    count = visible_text.downcase.scan(@search_word.downcase).count
-                    urlset_word_counts[urlset.id] = count if count >= 0
-                rescue OpenURI::HTTPError, SocketError, Timeout::Error, Errno::ENOENT => e
-                    has_error = true
-                    urlset_word_counts[urlset.id] = -1
-                    Rails.logger.error("Error fetching URL #{urlset.address}: #{e.message}")
+                    url = URI.parse(urlset.address)
+
+                    url.query = nil
+                    url.fragment = nil
+
+                    if url.host.nil?
+                        error_message = "相対URLは許可されていません: #{urlset.address}"
+                        Rails.logger.error(error_message)
+                        error_messages << error_message
+                        urlset_word_counts[urlset.id] = -1
+                        next
+                    end
+                    if [80, 443].include?(url.port) && ["http", "https"].include?(url.scheme)
+                        doc = Nokogiri::HTML(open(url, redirect: false, read_timeout: 1).read)
+                        doc.search('script, style').remove
+                        visible_text = doc.text  
+                        count = visible_text.downcase.scan(@search_word.downcase).count
+                        urlset_word_counts[urlset.id] = count if count >= 0
+                    else
+                        error_message = "許可しないポートまたはスキーマへのアクセスです: #{urlset.address}"
+                        Rails.logger.error(error_message)
+                        error_messages << error_message
+                        urlset_word_counts[urlset.id] = -1
+                    end
+                rescue OpenURI::HTTPRedirect, OpenURI::HTTPError, SocketError, Timeout::Error, Errno::ENOENT => e
+                    handle_exception(e, urlset, error_messages, urlset_word_counts)
                 end
+            sleep(1)
             end
             
-            flash.now[:alert] = "存在しないURLが含まれている可能性があります" if has_error
-            return urlset_word_counts
+            unless error_messages.empty?
+                flash.now[:alert] = error_messages.join("<br>").html_safe
+            end
+        
+            urlset_word_counts
+        end
+
+        def handle_exception(exception, urlset, error_messages, urlset_word_counts)
+            error = case exception
+                    when OpenURI::HTTPRedirect
+                        "リダイレクトが検出されました"
+                    when OpenURI::HTTPError
+                        "HTTPエラーが検出されました"
+                    when SocketError
+                        "接続エラーが検出されました(存在するURLですか？)"
+                    when Timeout::Error
+                        "タイムアウトエラーが検出されました"
+                    when Errno::ENOENT
+                        "存在しないURLが検出されました"
+                    else
+                        "エラーが検出されました"
+                    end
+        
+            error_message = "#{error}：#{urlset.address}"
+            Rails.logger.error(error_message)
+            error_messages << error_message
+            urlset_word_counts[urlset.id] = -1
         end
 end

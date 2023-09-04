@@ -9,7 +9,7 @@ class Urlset < ApplicationRecord
   validate :ensure_unique_address_within_block
 
   validates :address, format: /\A#{URI::regexp(%w(http https))}\z/
-
+  validates :address, length: { maximum: 100, message: "URLが長すぎます" }
 
   private
     def name_present?

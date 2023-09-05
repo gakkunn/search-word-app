@@ -2,6 +2,7 @@ class BlocksController < ApplicationController
     require 'open-uri'
     require 'nokogiri'
     
+    before_action :authenticate_user!
     before_action :set_block, only: %i[ show edit update destroy ]
 
     def index

@@ -1,0 +1,4 @@
+example_urlset:
+  name: Example Urlset
+  address: http://www.example.com
+  block: example_block

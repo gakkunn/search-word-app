@@ -1,15 +1,34 @@
+
 <!DOCTYPE html>
 <html>
   <head>
-    <title>SearchWordApp</title>
+    <title><%= full_title(yield(:title)) %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
+    <%= favicon_link_tag 'favicon.ico' %>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
-    <h1>Hello, World!</h1>
+    <header>
+      <nav>
+          <% if user_signed_in? %>
+          <%= link_to 'プロフィール変更', edit_user_registration_path %>
+          <%= link_to 'ログアウト', destroy_user_session_path, method: :delete %>
+      <% else %>
+          <%= link_to 'サインアップ', new_user_registration_path %>
+          <%= link_to 'ログイン', new_user_session_path %>
+          <% end %>
+      </nav>
+    </header>
+
+    <div class="container">
+      <% flash.each do |message_type, message| %>
+        <div class="alert alert-<%= message_type %>"><%= message %></div>
+      <% end %>
+      <%= yield %>
+      <%= debug(params) if Rails.env.development? %>
+    </div>
   </body>
 </html>

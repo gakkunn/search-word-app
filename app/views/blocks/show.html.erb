@@ -1,0 +1,27 @@
+<p>Blockの詳細ページかつ、検索ページです</p>
+
+<h1><%= @block.name %></h1>
+
+<ul>
+  <% @block.urlsets.each do |urlset| %>
+    <li>
+        <%= urlset.name %>:<%= urlset.address %>
+        <% if @search_word && @each_word_counts %>
+            <% if @each_word_counts[urlset.id] == -1 %>
+                <strong>(error)</strong>
+            <% elsif @each_word_counts[urlset.id] %>
+                <strong>(<%= @each_word_counts[urlset.id] %> matches)</strong>
+            <% end %>
+        <% end %>
+    </li>
+
+  <% end %>
+</ul>
+
+<%= form_with url: block_path(@block), method: :get, local: true do |f| %>
+  <%= f.text_field :search, placeholder: "探したい単語を入力", value: @search_word %>
+  <%= f.submit "検索" %>
+<% end %>
+
+<%= link_to 'Edit', edit_block_path(@block) %>
+<%= link_to 'Back', blocks_path %>

@@ -1,4 +1,6 @@
 class BlocksController < ApplicationController
+    MAX_SEARCH_WORD_LENGTH = 30
+
     require 'open-uri'
     require 'nokogiri'
     
@@ -12,6 +14,12 @@ class BlocksController < ApplicationController
     def show
         @urlsets = @block.urlsets
         @search_word = params[:search]
+
+        if search_word_too_long?
+            render :show
+            return
+        end
+        
         @each_word_counts = @search_word.present? ? search_in_addresses : {}
     end
   
@@ -68,6 +76,15 @@ class BlocksController < ApplicationController
 
         def block_params
             params.require(:block).permit(:name, urlsets_attributes: [:id, :name, :address, :_destroy])
+        end
+
+        def search_word_too_long?
+            if @search_word.present? && @search_word.length > MAX_SEARCH_WORD_LENGTH
+                flash.now[:alert] = "検索ワードは#{MAX_SEARCH_WORD_LENGTH}文字以下で入力してください。"
+                true
+            else
+                false
+            end
         end
 
         def search_in_addresses

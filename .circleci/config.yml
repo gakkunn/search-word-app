@@ -79,7 +79,6 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            gem install bundler -v 2.3.26
             bundle install --path vendor/bundle
       - run:
           name: Database setup

@@ -1,11 +1,9 @@
-<p>Blockの詳細ページかつ、検索ページです</p>
+<h2><%= @block.name %></h1>
 
-<h1><%= @block.name %></h1>
-
-<ul>
+<ul class="block-show-ul">
   <% @block.urlsets.each do |urlset| %>
     <li>
-        <%= urlset.name %>:<%= urlset.address %>
+        <strong class="block-show-urlname"><%= urlset.name %></strong><%= urlset.address %>
         <% if @search_word && @each_word_counts %>
             <% if @each_word_counts[urlset.id] == -1 %>
                 <strong>(error)</strong>
@@ -18,10 +16,13 @@
   <% end %>
 </ul>
 
-<%= form_with url: block_path(@block), method: :get, local: true do |f| %>
-  <%= f.text_field :search, placeholder: "探したい単語を入力", value: @search_word %>
-  <%= f.submit "検索" %>
-<% end %>
+<div class="block-show-form">
+  <%= form_with url: block_path(@block), method: :get, local: true do |f| %>
+    <%= f.text_field :search, placeholder: "探したい単語を入力", value: @search_word %>
+    <%= f.submit "検索" %>
+  <% end %>
+</div>
 
-<%= link_to 'Edit', edit_block_path(@block) %>
-<%= link_to 'Back', blocks_path %>
+<div class="back-button-parent">
+  <%= link_to '戻る', blocks_path, class: 'back-button' %>
+</div>

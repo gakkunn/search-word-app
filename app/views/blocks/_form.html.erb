@@ -8,14 +8,19 @@
         <%= f.text_field :name %>
     </div> 
 
-    <h3>urlのnameとaddressを記述してください</h3>
+    <h3>urlのnameとaddressを記述してください(最大20個)</h3>
+    <p class="url-alert">必ずスクレイピングを許可しているURLを記入してください</p>
     <div class="field">
         <%= f.fields_for :urlsets do |url_form| %>
             <div class="url-set">
-                <%= url_form.label :name %>
-                <%= url_form.text_field :name %>
-                <%= url_form.label :address %>
-                <%= url_form.text_field :address %>
+                <div class="url-set-name">
+                    <%= url_form.label :name %>
+                    <%= url_form.text_field :name %>
+                </div>
+                <div class="url-set-address">
+                    <%= url_form.label :address %>
+                    <%= url_form.text_field :address %>
+                </div>
             </div>
         <% end %>
     </div>

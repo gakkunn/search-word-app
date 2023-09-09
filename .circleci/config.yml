@@ -69,6 +69,11 @@ jobs:
       - restore_cache:
           key: v2-dependencies-{{ checksum "Gemfile.lock" }}
       - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get update -qq
+            sudo apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim
+      - run:
           name: Install timezone data
           command: sudo apt-get install -y tzdata
       - run:

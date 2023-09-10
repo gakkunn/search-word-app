@@ -33,7 +33,7 @@ jobs:
     steps:
       - checkout
       - save_cache:
-          key: v2-search-word-app-{{ .Branch }}-{{ .Revision }}
+          key: v3-search-word-app-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/search-word-app
 
@@ -42,9 +42,9 @@ jobs:
       name: default_container
     steps:
       - restore_cache:
-          key: v2-search-word-app-{{ .Branch }}-{{ .Revision }}
+          key: v3-search-word-app-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+          key: v3-dependencies-{{ checksum "Gemfile.lock" }}
       - run:
           name: Update APT repository and Install MySQL development libraries
           command: |
@@ -56,7 +56,7 @@ jobs:
           command: |
             bundle install
       - save_cache:
-          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+          key: v3-dependencies-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
 
@@ -65,9 +65,9 @@ jobs:
       name: default_container
     steps:
       - restore_cache:
-          key: v2-search-word-app-{{ .Branch }}-{{ .Revision }}
+          key: v3-search-word-app-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+          key: v3-dependencies-{{ checksum "Gemfile.lock" }}
       - run:
           name: Install Dependencies
           command: |

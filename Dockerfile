@@ -13,6 +13,9 @@ RUN bundle install
 
 COPY . /search-word-app
 
+ARG RAILS_MASTER_KEY
+ENV RAILS_MASTER_KEY ${RAILS_MASTER_KEY}
+
 RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 COPY entrypoint.sh /usr/bin/

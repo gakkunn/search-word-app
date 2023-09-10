@@ -46,6 +46,12 @@ jobs:
       - restore_cache:
           key: v2-dependencies-{{ checksum "Gemfile.lock" }}
       - run:
+        name: Check RAILS_MASTER_KEY value
+        command: echo $RAILS_MASTER_KEY
+      - run:
+        name: Check CIRCLECI_TEST value
+        command: echo $CIRCLECI_TEST
+      - run:
           name: Update APT repository and Install MySQL development libraries
           command: |
             sudo apt-get update

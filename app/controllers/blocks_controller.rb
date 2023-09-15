@@ -11,6 +11,7 @@ class BlocksController < ApplicationController
         @blocks = current_user.blocks
     end
   
+    # 検索画面
     def show
         @urlsets = @block.urlsets
         @search_word = params[:search]
@@ -98,29 +99,30 @@ class BlocksController < ApplicationController
                     url.query = nil
                     url.fragment = nil
 
+                    # スキーム後クエリ、フラグメント、特殊文字が続く場合に対して
+                    # ex)  http:#fragment,http:/#(@)*!
                     if url.host.nil?
-                        error_message = "相対URLは許可されていません: #{urlset.address}"
-                        Rails.logger.error(error_message)
-                        error_messages << error_message
-                        urlset_word_counts[urlset.id] = -1
+                        log_and_store_error(urlset, "正しいURLを入力してください: #{urlset.address}", error_messages, urlset_word_counts)
                         next
                     end
-                    if [80, 443].include?(url.port) && ["http", "https"].include?(url.scheme)
-                        doc = Nokogiri::HTML(open(url, redirect: false, read_timeout: 1).read)
-                        doc.search('script, style').remove
-                        visible_text = doc.text  
-                        count = visible_text.downcase.scan(@search_word.downcase).count
-                        urlset_word_counts[urlset.id] = count if count >= 0
-                    else
-                        error_message = "許可しないポートまたはスキーマへのアクセスです: #{urlset.address}"
-                        Rails.logger.error(error_message)
-                        error_messages << error_message
-                        urlset_word_counts[urlset.id] = -1
+
+                    # URLに明示的にポート番号が指定されている場合に対して
+                    # ex) https://example.com:8080
+                    unless [80, 443].include?(url.port)
+                        log_and_store_error(urlset, "許可しないポートへのアクセスです: #{urlset.address}", error_messages, urlset_word_counts)
+                        next
                     end
+
+                    doc = Nokogiri::HTML(open(url, redirect: false, read_timeout: 1).read)
+                    doc.search('script, style').remove
+                    visible_text = doc.text  
+                    count = visible_text.downcase.scan(@search_word.downcase).count
+                    urlset_word_counts[urlset.id] = count if count >= 0
+
                 rescue OpenURI::HTTPRedirect, OpenURI::HTTPError, SocketError, Timeout::Error, Errno::ENOENT => e
                     handle_exception(e, urlset, error_messages, urlset_word_counts)
                 end
-            sleep(1)
+                sleep(0.1)
             end
             
             unless error_messages.empty?
@@ -135,7 +137,7 @@ class BlocksController < ApplicationController
                     when OpenURI::HTTPRedirect
                         "リダイレクトが検出されました"
                     when OpenURI::HTTPError
-                        "HTTPエラーが検出されました"
+                        "404 Not Found, 500 Internal Server Errorgaが検出されました"
                     when SocketError
                         "接続エラーが検出されました(存在するURLですか？)"
                     when Timeout::Error
@@ -147,8 +149,13 @@ class BlocksController < ApplicationController
                     end
         
             error_message = "#{error}：#{urlset.address}"
-            Rails.logger.error(error_message)
-            error_messages << error_message
+            log_and_store_error(urlset, error_message, error_messages, urlset_word_counts)
+        end
+
+        def log_and_store_error(urlset, message, error_messages, urlset_word_counts)
+            Rails.logger.error(message)
+            error_messages << message
             urlset_word_counts[urlset.id] = -1
         end
+          
 end

@@ -1,6 +1,6 @@
 <li id="block-<%= block.id %>">
 	<%= block.name %>
 	<%= link_to '検索', block %>
-	<%= link_to 'Edit', edit_block_path(block) %>
-	<%= link_to 'Destroy', block, method: :delete, data: { confirm: 'Are you sure?' } %>
+	<%= link_to '編集', edit_block_path(block) %>
+	<%= link_to '削除', block, method: :delete, data: { confirm: 'Are you sure?' } %>
 </li>

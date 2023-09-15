@@ -13,9 +13,9 @@ RUN bundle install
 
 COPY . /search-word-app
 
+# デプロイ(push)するときだけ以下の3行を実行、開発環境でのビルド時はコメントアウト
 ARG RAILS_MASTER_KEY
 ENV RAILS_MASTER_KEY ${RAILS_MASTER_KEY}
-
 RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 COPY entrypoint.sh /usr/bin/

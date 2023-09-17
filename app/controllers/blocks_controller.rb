@@ -26,7 +26,8 @@ class BlocksController < ApplicationController
   
     def new
         @block = current_user.blocks.build
-        Block::MAX_URLSETS_COUNT.times { @block.urlsets.build }
+        @block.urlsets.build
+        @load_block_form_js = true
     end
   
     def create
@@ -35,8 +36,7 @@ class BlocksController < ApplicationController
         if @block.save
             redirect_to blocks_path, notice: 'Block and URL were successfully created.'
         else
-            required_urlsets = Block::MAX_URLSETS_COUNT - @block.urlsets.size
-            required_urlsets.times { @block.urlsets.build }
+            @load_block_form_js = true
             render :new
         end
     end

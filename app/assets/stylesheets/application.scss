@@ -7,7 +7,9 @@ $main-color: #3c96abbd;
 $sub-color: #0e3139a8;
 $alert-color: #f44336;
 $alert-bg-color: #fa1909bd;
+$alert-btn-color: #981309a8;
 $notice-color: #418e07a1;
+$notice-btn-color: #2aa218a6;
 
 * {
   margin: 0;
@@ -111,10 +113,19 @@ input[type='submit'] {
   }
 }
 
+.urlset-remove-btn {
+  background-color: $alert-btn-color;
+
+  &:hover {
+    background-color: darken($alert-btn-color, 10%);
+  }
+}
+
 //戻るボタン
 .back-button-parent {
   text-align: center;
 }
+
 .back-button {
   background-color: $sub-color;
   color: #fff;
@@ -128,7 +139,17 @@ input[type='submit'] {
   text-align: center;
 
   &:hover {
-    background-color: darken($main-color, 10%);
+    background-color: darken($sub-color, 10%);
+  }
+}
+
+.add-urlset-btn {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background: $notice-btn-color;
+
+  &:hover {
+    background-color: darken($notice-btn-color, 10%);
   }
 }
 
@@ -197,7 +218,7 @@ li[id^='block-'] {
 
 .url-set {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
 
   label,

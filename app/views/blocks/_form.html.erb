@@ -22,13 +22,13 @@
                     <%= url_form.text_field :address %>
                 </div>
                 <% if @block.new_record? %>
-                    <button class="urlset-remove-btn">削除</button>
+                    <button class="urlset-remove-btn button">削除</button>
                 <% end %>
             </div>
         <% end %>
     </div>
     <% if @block.new_record? %>
-        <button id="add-url-set">URLセットを追加</button>
+        <button class="add-urlset-btn button" id="add-url-set">URLセットを追加</button>
     <% end %>
 
     <div class="actions">

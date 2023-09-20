@@ -8,6 +8,13 @@ document.addEventListener('turbolinks:load', function () {
     10
   );
 
+  // enterキーをおst
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+    }
+  });
+
   // [Add_action]ユーザーが追加ボタンを押した時
   if (currentAction == 'new' || currentAction == 'create') {
     let addUrlSetButton = document.getElementById('add-url-set');

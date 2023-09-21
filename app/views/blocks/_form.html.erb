@@ -3,14 +3,14 @@
     <%= render 'shared/error_messages', object: f.object %>
   
     <h3>Blockの名前を記述してください</h3>
-    <div class="field">
+    <div class="field block-name">
         <%= f.label :name %>
         <%= f.text_field :name %>
     </div> 
 
-    <h3>urlのnameとaddressを記述してください(最大20個)</h3>
+    <h3>urlのnameとaddressを記述してください(最大<%= Block::MAX_URLSETS_COUNT %>個)</h3>
     <p class="url-alert">必ずスクレイピングを許可しているURLを記入してください</p>
-    <div class="field">
+    <div class="field form-container">
         <%= f.fields_for :urlsets do |url_form| %>
             <div class="url-set">
                 <div class="url-set-name">
@@ -21,9 +21,15 @@
                     <%= url_form.label :address %>
                     <%= url_form.text_field :address %>
                 </div>
+                <% if @block.new_record? %>
+                    <button class="urlset-remove-btn button">削除</button>
+                <% end %>
             </div>
         <% end %>
     </div>
+    <% if @block.new_record? %>
+        <button class="add-urlset-btn button" id="add-url-set">URLセットを追加</button>
+    <% end %>
 
     <div class="actions">
         <%= f.submit submit_label %>

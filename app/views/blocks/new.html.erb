@@ -1,4 +1,7 @@
 <h2>新しいブロック作成ページ</h2>
+<% if @block.urlsets.empty? %>
+  <% @block.urlsets.build %>
+<% end %>
 <%= render 'form', block: @block, submit_label: "作成" %>
 <div class="back-button-parent">
     <%= link_to '戻る', blocks_path, class: 'back-button' %>

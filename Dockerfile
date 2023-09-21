@@ -1,6 +1,6 @@
 FROM ruby:2.5.7
 
-RUN apt-get update -qq && apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim　yarn
+RUN apt-get update -qq && apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim yarn
 
 RUN mkdir /search-word-app
 

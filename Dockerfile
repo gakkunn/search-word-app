@@ -1,6 +1,6 @@
 FROM ruby:2.5.7
 
-RUN apt-get update -qq && apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim yarn
+RUN apt-get update -qq && apt-get install -y build-essential nodejs default-mysql-client default-libmysqlclient-dev vim
 
 RUN mkdir /search-word-app
 
@@ -16,6 +16,11 @@ COPY . /search-word-app
 # デプロイ(push)するときだけ以下の3行を実行、開発環境でのビルド時はコメントアウト
 ARG RAILS_MASTER_KEY
 ENV RAILS_MASTER_KEY ${RAILS_MASTER_KEY}
+
+# yarnのインストール確認
+RUN apt-get install -y yarn
+RUN yarn --version
+
 RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 COPY entrypoint.sh /usr/bin/

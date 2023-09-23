@@ -9,8 +9,7 @@
   エラーが起きると以下のようになります。(URL入力フォームの制限は強くしています)
   ![スクリーンショット 2023-09-21 9 00 11](https://github.com/gakkunn/search-word-app/assets/130534378/44eca9e1-400e-4a0f-98a8-c8401f5f97ea)
   3.次に検索画面から探したいワードを検索します。(マッチした場合だけURLリンクを表示しています。)
-  ![スクリーンショット 2023-09-23 10 59 07](https://github.com/gakkunn/search-word-app/assets/130534378/9b6c5e1e-4d57-4f91-9d75-333095ec4b24">
-8/a984e294-55b8-4a4c-b5eb-65623484b20a)
+    ![スクリーンショット 2023-09-21 9 00 11](https://github.com/gakkunn/search-word-app/assets/130534378/7ce89074-7b95-4d69-89fb-1a81631da1d1)
 
 ## URL
   https://search-word.com <br >

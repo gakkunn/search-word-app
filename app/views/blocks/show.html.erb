@@ -4,12 +4,16 @@
   <% @block.urlsets.each do |urlset| %>
     <li>
         <strong class="block-show-urlname"><%= urlset.name %></strong><%= urlset.address %>
-        <% if @search_word && @each_word_counts %>
-            <% if @each_word_counts[urlset.id] == -1 %>
-                <strong>(error)</strong>
-            <% elsif @each_word_counts[urlset.id] %>
-                <strong>(<%= @each_word_counts[urlset.id] %> matches)</strong>
-            <% end %>
+        <!-- Matchesの条件チェック -->
+        <% matches_count = @each_word_counts[urlset.id] if @search_word && @each_word_counts %>
+
+        <% if matches_count && matches_count > 0 %>
+        <strong>(<%= matches_count %> matches)</strong>
+            (<%= link_to 'リンク', urlset.address, target: "_blank" %>)
+        <% elsif matches_count == -1 %>
+            <strong>(error)</strong>
+        <% elsif matches_count == 0 %>
+            <strong>(0 matches)</strong>
         <% end %>
     </li>
 
